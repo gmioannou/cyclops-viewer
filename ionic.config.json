@@ -1,0 +1,7 @@
+{
+  "name": "cyclops-viewer",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
