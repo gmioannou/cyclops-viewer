@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cyclops Viewer</string>
+    <string name="title_activity_main">Cyclops Viewer</string>
+    <string name="package_name">cy.ac.cut.celestia.www</string>
+    <string name="custom_url_scheme">cy.ac.cut.celestia.www</string>
+</resources>
