@@ -77,7 +77,7 @@ export class ModelPageAddFeaturePage implements OnInit {
   
         let objectID = res.data.addResults[0].objectId
 
-        objectID = 783
+      
 
         if(this.items.length > 0) {
           // there is a file to upload
@@ -85,7 +85,7 @@ export class ModelPageAddFeaturePage implements OnInit {
           const formData = new FormData();
           formData.append("f", "json")
           formData.append("attachment", this.items[0])
-          const attachmentRes = await axios.post("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Prominent_Peaks_attach/FeatureServer/0/"+ objectID +"/addAttachment", formData, {
+          const attachmentRes = await axios.post("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Hazards_Uptown_Charlotte/FeatureServer/0/"+ objectID +"/addAttachment", formData, {
             headers: {
               'content-type': 'multipart/form-data'
             }
