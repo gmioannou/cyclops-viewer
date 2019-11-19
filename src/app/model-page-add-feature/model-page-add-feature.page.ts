@@ -58,11 +58,11 @@ export class ModelPageAddFeaturePage implements OnInit {
             "y":this.data.y
          },
          "attributes":{
-            "Description":"hello world",
-            "Status":"Active",
-            "SpecialInstructions":"Contact Dispatch",
-            "Priority":"High",
-            "HazardType":"Flooding"
+            "description":"Added from Cyclops!",
+            "status":"Active",
+            "specialinstructions":"Contact Dispatch",
+            "priority":"High",
+            "hazardtype":"Flooding"
          }
       }]
 
