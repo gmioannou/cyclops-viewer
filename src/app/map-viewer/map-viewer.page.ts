@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { loadModules } from 'esri-loader';
+// import { ModalPageAddFeature } from '../modal/modal.page';
+
 
 @Component({
   selector: 'app-map-viewer',
@@ -10,7 +13,30 @@ import { loadModules } from 'esri-loader';
 export class MapViewerPage implements OnInit {
   @ViewChild("map", { static: false }) mapEl: ElementRef;
 
-  constructor(public platform: Platform) { }
+  mapView
+
+  constructor(public platform: Platform, public modalController: ModalController) { }
+
+  // async presentModal() {
+  //   const modal = await this.modalController.create({
+  //     component: ModalPage
+  //   });
+  //   return await modal.present();
+  // }
+
+  addToMap(event) {
+    document.getElementById("map").style.cursor = "crosshair"
+    let eventListen = this.mapView.on("click", (event) => {
+      // remove the event when done
+      eventListen.remove();
+      // console.log(event.mapPoint);
+      document.getElementById("map").style.cursor = "default"
+
+      // now 
+
+    });
+
+  }
 
   ngOnInit() {
     this.getMap();
@@ -77,48 +103,50 @@ export class MapViewerPage implements OnInit {
 
     map.add(hazardsLayer);
 
-    let mapView = new MapView({
+    this.mapView = new MapView({
       container: this.mapEl.nativeElement,
       center: [33, 35],
       zoom: 8,
       map: map
     });
 
-    // editor widget
-    var editorWidget = new Editor({
-      view: mapView,
-      layerInfos: [{
-        layer: hazardsLayer,
-        fieldConfig: [
-          {
-            name: "hazardtype",
-            label: "Hazard Type"
-          },
-          {
-            name: "description",
-            label: "Description"
-          },
-          {
-            name: "status",
-            label: "Status"
-          },
-          {
-            name: "priority",
-            label: "Priority"
-          }          
-        ],
-        enabled: true,
-        addEnabled: true,
-        updateEnabled: true,
-        deleteEnabled: true
-      }]
-    });
 
-    mapView.ui.add(editorWidget, "top-right");
+
+    // editor widget
+    // var editorWidget = new Editor({
+    //   view: mapView,
+    //   layerInfos: [{
+    //     layer: hazardsLayer,
+    //     fieldConfig: [
+    //       {
+    //         name: "hazardtype",
+    //         label: "Hazard Type"
+    //       },
+    //       {
+    //         name: "description",
+    //         label: "Description"
+    //       },
+    //       {
+    //         name: "status",
+    //         label: "Status"
+    //       },
+    //       {
+    //         name: "priority",
+    //         label: "Priority"
+    //       }          
+    //     ],
+    //     enabled: true,
+    //     addEnabled: true,
+    //     updateEnabled: true,
+    //     deleteEnabled: true
+    //   }]
+    // });
+
+    // mapView.ui.add(editorWidget, "top-right");
 
     // location widget
     var locateWidget = new Locate({
-      view: mapView,
+      view: this.mapView,
       useHeadingEnabled: true,
       goToOverride: function (view, options) {
         options.target.scale = 1500;  // Override the default map scale
@@ -126,16 +154,16 @@ export class MapViewerPage implements OnInit {
       }
     });
 
-    mapView.ui.add(locateWidget, "top-left");
+    this.mapView.ui.add(locateWidget, "top-left");
 
     // zoom to current location
-    mapView.when(function() {
+    this.mapView.when(function() {
       locateWidget.locate()
     });
 
     // location tracker
     var track = new Track({
-      view: mapView,
+      view: this.mapView,
       useHeadingEnabled: true  // Change orientation of the map
       // graphic: new Graphic({
       //   symbol: {
@@ -150,23 +178,23 @@ export class MapViewerPage implements OnInit {
       // }),
     });
 
-    mapView.ui.add(track, "top-left");
+    this.mapView.ui.add(track, "top-left");
 
     // compass
     var compass = new Compass({
-      view: mapView
+      view: this.mapView
     });
 
     // adds the compass to the top left corner of the MapView
-    mapView.ui.add(compass, "top-left");
+    this.mapView.ui.add(compass, "top-left");
 
     // basemap switcher
     var basemapToggle = new BasemapToggle({
-      view: mapView,
+      view: this.mapView,
       nextBasemap: "satellite"
     });
 
-    mapView.ui.add(basemapToggle, "bottom-left");
+    this.mapView.ui.add(basemapToggle, "bottom-left");
 
     // // basemap gallery
     // var basemapGallery = new BasemapGallery({
