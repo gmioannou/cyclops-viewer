@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { loadModules } from 'esri-loader';
-// import { ModalPageAddFeature } from '../modal/modal.page';
+import { ModelPageAddFeaturePage } from '../model-page-add-feature/model-page-add-feature.page';
 
 
 @Component({
@@ -16,24 +16,29 @@ export class MapViewerPage implements OnInit {
   mapView
 
   constructor(public platform: Platform, public modalController: ModalController) { }
+  
 
-  // async presentModal() {
-  //   const modal = await this.modalController.create({
-  //     component: ModalPage
-  //   });
-  //   return await modal.present();
-  // }
+  async presentModal(mapPoint) {
+    const modal = await this.modalController.create({
+      component: ModelPageAddFeaturePage,
+      componentProps: {
+        'data': mapPoint
+      }
+    });
+    return await modal.present();
+  }
 
   addToMap(event) {
     document.getElementById("map").style.cursor = "crosshair"
     let eventListen = this.mapView.on("click", (event) => {
       // remove the event when done
       eventListen.remove();
-      // console.log(event.mapPoint);
+      // console.log("map point", event.mapPoint);
       document.getElementById("map").style.cursor = "default"
 
       // now 
 
+      this.presentModal(event.mapPoint)
     });
 
   }
@@ -47,8 +52,9 @@ export class MapViewerPage implements OnInit {
     await this.platform.ready();
 
     // Load the ArcGIS API for JavaScript modules
-    const [Map, MapView, Locate, Editor, FeatureLayer, Track, Graphic, Compass, BasemapToggle, BasemapGallery]: any = await loadModules([
+    const [Map, WebMap, MapView, Locate, Editor, FeatureLayer, Track, Graphic, Compass, BasemapToggle, BasemapGallery]: any = await loadModules([
       'esri/Map',
+      'esri/WebMap',
       'esri/views/MapView',
       'esri/widgets/Locate',
       'esri/widgets/Editor',
@@ -93,20 +99,27 @@ export class MapViewerPage implements OnInit {
     };
 
     var hazardsLayer = new FeatureLayer({
-      url: "https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0",
+      url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Hazards_Uptown_Charlotte/FeatureServer/0",
       popupTemplate: popTemplate
     });
 
+    let webmap = new WebMap({
+      portalItem: {
+        id: "6c5d657f1cb04a5eb78a450e3c699c2a"
+      }
+    });
+
     let map = new Map({
-      basemap: 'osm'
+      basemap: 'osm',
+      map: webmap
     });
 
     map.add(hazardsLayer);
 
     this.mapView = new MapView({
       container: this.mapEl.nativeElement,
-      center: [33, 35],
-      zoom: 8,
+      // center: [33, 35],
+      // zoom: 8,
       map: map
     });
 

@@ -1,0 +1,24 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Modal Content</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list lines="full" class="ion-no-margin ion-no-padding">
+        <ion-item>
+            <ion-label position="stacked"> Description <ion-text color="danger">*</ion-text></ion-label>
+            <ion-input required type="text" oninput="handleFirstNameValue(event)"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked"> Photo </ion-label>
+            <input type="file" id="filechooser" />
+        </ion-item>
+
+    </ion-list>
+    <div class="ion-padding">
+      <ion-button (click)="addFeature()" expand="block" type="submit" class="ion-no-margin" color="primary">Add</ion-button>
+    </div>
+</ion-content>

@@ -8,6 +8,10 @@ const routes: Routes = [
     path: 'map-viewer',
     loadChildren: () => import('./map-viewer/map-viewer.module').then( m => m.MapViewerPageModule)
   },
+  {
+    path: 'model-page-add-feature',
+    loadChildren: () => import('./model-page-add-feature/model-page-add-feature.module').then( m => m.ModelPageAddFeaturePageModule)
+  },
 ];
 
 @NgModule({
