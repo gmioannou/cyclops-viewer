@@ -99,19 +99,18 @@ export class MapViewerPage implements OnInit {
     };
 
     var hazardsLayer = new FeatureLayer({
-      url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Hazards_Uptown_Charlotte/FeatureServer/0",
+      url: "https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0",
       popupTemplate: popTemplate
     });
 
-    let webmap = new WebMap({
-      portalItem: {
-        id: "6c5d657f1cb04a5eb78a450e3c699c2a"
-      }
-    });
+    // let webmap = new WebMap({
+    //   portalItem: {
+    //     id: "6c5d657f1cb04a5eb78a450e3c699c2a"
+    //   }
+    // });
 
     let map = new Map({
-      basemap: 'osm',
-      map: webmap
+      basemap: 'osm'
     });
 
     map.add(hazardsLayer);

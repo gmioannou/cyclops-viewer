@@ -62,14 +62,14 @@ export class ModelPageAddFeaturePage implements OnInit {
             "Status":"Active",
             "SpecialInstructions":"Contact Dispatch",
             "Priority":"High",
-            "HazardType":"Other"
+            "HazardType":"Flooding"
          }
       }]
 
       let encodedStr = formurlencoded({ f: "json", adds:  JSON.stringify(adds) })
 
       try {
-        const res = await axios.post("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Hazards_Uptown_Charlotte/FeatureServer/0/applyEdits", encodedStr, {
+        const res = await axios.post("https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0/applyEdits", encodedStr, {
           headers: {
             'content-type': 'application/x-www-form-urlencoded;'
           }
@@ -85,7 +85,7 @@ export class ModelPageAddFeaturePage implements OnInit {
           const formData = new FormData();
           formData.append("f", "json")
           formData.append("attachment", this.items[0])
-          const attachmentRes = await axios.post("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Hazards_Uptown_Charlotte/FeatureServer/0/"+ objectID +"/addAttachment", formData, {
+          const attachmentRes = await axios.post("https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0/"+ objectID +"/addAttachment", formData, {
             headers: {
               'content-type': 'multipart/form-data'
             }
