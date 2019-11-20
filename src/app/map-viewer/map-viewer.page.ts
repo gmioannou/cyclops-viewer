@@ -265,8 +265,11 @@ export class MapViewerPage implements OnInit {
                 });
               }
             }
-            // there are e
-            if(filedObj.name && filedObj.name != "" && filedObj.values.length > 0)  this.hazardTypes.push(filedObj)
+            // check if valid 
+            if(filedObj.name && filedObj.name != "" && filedObj.values.length > 0) {
+              let found = this.hazardTypes.filter((o) => o.name == filedObj.name).length > 0
+              if(!found) this.hazardTypes.push(filedObj)
+            }
             
           });
         }
