@@ -9,13 +9,11 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { ModelPageAddFeaturePage } from './model-page-add-feature/model-page-add-feature.page';
-
 @NgModule({
-  declarations: [AppComponent, ModelPageAddFeaturePage],
-  entryComponents: [ModelPageAddFeaturePage],
+  declarations: [AppComponent],
+  entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
-  exports: [ ModelPageAddFeaturePage ],
+  exports: [],
   providers: [
     StatusBar,
     SplashScreen,
@@ -23,4 +21,4 @@ import { ModelPageAddFeaturePage } from './model-page-add-feature/model-page-add
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

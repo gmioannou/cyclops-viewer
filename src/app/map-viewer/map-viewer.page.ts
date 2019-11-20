@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { loadModules } from 'esri-loader';
-import { ModelPageAddFeaturePage } from '../model-page-add-feature/model-page-add-feature.page';
+import { IonBottomDrawerModule, DrawerState } from 'ion-bottom-drawer';
 
+import formurlencoded from 'form-urlencoded';
+import axios from 'axios'
 
 @Component({
   selector: 'app-map-viewer',
@@ -13,38 +15,101 @@ import { ModelPageAddFeaturePage } from '../model-page-add-feature/model-page-ad
 export class MapViewerPage implements OnInit {
   @ViewChild("map", { static: false }) mapEl: ElementRef;
 
-  mapView
+  mapView: any = null
+  drawerState = 0;
+  dockedHeight = 300;
+  items: File[] = [];
+  mapPoint: any;
 
   constructor(public platform: Platform, public modalController: ModalController) { }
-  
-
-  async presentModal(mapPoint) {
-    const modal = await this.modalController.create({
-      component: ModelPageAddFeaturePage,
-      componentProps: {
-        'data': mapPoint
-      }
-    });
-    return await modal.present();
-  }
-
-  addToMap(event) {
-    document.getElementById("map").style.cursor = "crosshair"
-    let eventListen = this.mapView.on("click", (event) => {
-      // remove the event when done
-      eventListen.remove();
-      // console.log("map point", event.mapPoint);
-      document.getElementById("map").style.cursor = "default"
-
-      // now 
-
-      this.presentModal(event.mapPoint)
-    });
-
-  }
 
   ngOnInit() {
     this.getMap();
+    this.listenerInputChange();
+  }
+
+  addToMap(event) {
+    this.drawerState = DrawerState.Docked;
+
+    document.getElementById("map").style.cursor = "crosshair"
+
+    let eventListen = this.mapView.on("click", (event) => {
+      
+      // remove the event when done
+      eventListen.remove();
+
+      // console.log("map point", event.mapPoint);
+      document.getElementById("map").style.cursor = "default"
+
+      this.mapPoint = event.mapPoint
+    });
+
+  }
+  
+  private listenerInputChange() {
+    const wireUpFileChooser = () => {
+        const elementRef = document.getElementById("filechooser")
+        elementRef.addEventListener('change', (evt: any) => {
+            const files = evt.target.files as File[];
+            for (let i = 0; i < files.length; i++) {
+                this.items.push(files[i]);
+            }
+        }, false);
+    };
+    wireUpFileChooser();
+  }
+
+  async addFeature() {
+
+    console.log(this.mapPoint)
+
+    let adds = [{
+         "geometry":{
+            "spatialReference":{
+               "latestWkid":3857,
+               "wkid":102100
+            },
+            "x":this.mapPoint.x,
+            "y":this.mapPoint.y
+         },
+         "attributes":{
+            "description":"Added from Cyclops!",
+            "status":"Active",
+            "specialinstructions":"Contact Dispatch",
+            "priority":"High",
+            "hazardtype":"Flooding"
+         }
+      }]
+
+      let encodedStr = formurlencoded({ f: "json", adds:  JSON.stringify(adds) })
+
+      try {
+        const res = await axios.post("https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0/applyEdits", encodedStr, {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded;'
+          }
+        }) 
+  
+        let objectID = res.data.addResults[0].objectId
+
+        if(this.items.length > 0) {
+          // there is a file to upload
+          // make the request to 
+          const formData = new FormData();
+          formData.append("f", "json")
+          formData.append("attachment", this.items[0])
+          const attachmentRes = await axios.post("https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0/"+ objectID +"/addAttachment", formData, {
+            headers: {
+              'content-type': 'multipart/form-data'
+            }
+          }) 
+
+          console.log(attachmentRes.data)
+
+        }
+      } catch (e) {
+        alert(e.message)
+      }
   }
 
   async getMap() {
@@ -92,7 +157,7 @@ export class MapViewerPage implements OnInit {
             {
               fieldName: "priority",
               label: "Priority"
-            } 
+            }
           ]
         }
       ]
@@ -103,22 +168,15 @@ export class MapViewerPage implements OnInit {
       popupTemplate: popTemplate
     });
 
-    // let webmap = new WebMap({
-    //   portalItem: {
-    //     id: "6c5d657f1cb04a5eb78a450e3c699c2a"
-    //   }
-    // });
-
     let map = new Map({
-      basemap: 'osm'
+      basemap: 'osm',
+      layers: [hazardsLayer]
     });
-
-    map.add(hazardsLayer);
 
     this.mapView = new MapView({
       container: this.mapEl.nativeElement,
-      // center: [33, 35],
-      // zoom: 8,
+      center: [33, 35],
+      zoom: 8,
       map: map
     });
 
@@ -169,7 +227,7 @@ export class MapViewerPage implements OnInit {
     this.mapView.ui.add(locateWidget, "top-left");
 
     // zoom to current location
-    this.mapView.when(function() {
+    this.mapView.when(function () {
       locateWidget.locate()
     });
 
@@ -206,7 +264,7 @@ export class MapViewerPage implements OnInit {
       nextBasemap: "satellite"
     });
 
-    this.mapView.ui.add(basemapToggle, "bottom-left");
+    this.mapView.ui.add(basemapToggle, "top-right");
 
     // // basemap gallery
     // var basemapGallery = new BasemapGallery({

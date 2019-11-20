@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { MapViewerPageRoutingModule } from './map-viewer-routing.module';
 
 import { MapViewerPage } from './map-viewer.page';
+import { IonBottomDrawerModule } from 'ion-bottom-drawer';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MapViewerPageRoutingModule
+    MapViewerPageRoutingModule,
+    IonBottomDrawerModule
   ],
   declarations: [MapViewerPage]
 })

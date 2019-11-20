@@ -1,17 +1,49 @@
+<ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button color="primary">
+        <ion-icon slot="icon-only" name="contact"></ion-icon>
+      </ion-button>
+      <ion-button color="primary">
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="primary">
+      <ion-button color="primary">
+        <ion-icon slot="icon-only" name="more"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Hazard Viewer</ion-title>
+  </ion-toolbar>
+
 <ion-content>
-  <div id="map" #map >
-    <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-      <ion-fab-button >
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-list side="top">
-        <ion-fab-button (click)='addToMap($event)' color="light">
-          <ion-icon name="map"></ion-icon>
-        </ion-fab-button>
-        <!-- <ion-fab-button color="light">
-          <ion-icon name="logo-twitter"></ion-icon>
-        </ion-fab-button> -->
-      </ion-fab-list>
-    </ion-fab>
-  </div>
+
+  <div id="map" #map></div>
+
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button (click)="addToMap($event)">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-bottom-drawer [(state)]=drawerState [(dockedHeight)]=dockedHeight>
+    <div class="drawer-content">
+      <ion-list lines="full" class="ion-no-margin ion-no-padding">
+        <ion-item>
+          <ion-label position="stacked"> Description <ion-text color="danger">*</ion-text>
+          </ion-label>
+          <ion-input required type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Photo</ion-label>
+          <input type="file" id="filechooser" />
+        </ion-item>
+
+      </ion-list>
+      <div class="ion-padding">
+        <ion-button (click)="addFeature()" expand="block" type="submit" class="ion-no-margin" color="primary">Add
+        </ion-button>
+      </div>
+    </div>
+  </ion-bottom-drawer>
+
 </ion-content>

@@ -3,4 +3,9 @@ html, body, #map {
     margin: 0;
     height: 100%;
     width: 100%;
-  }
+}
+
+#map {
+  position: fixed;
+  height: 92vh;
+}

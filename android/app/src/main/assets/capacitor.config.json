@@ -1,6 +1,6 @@
 {
-  "appId": "cy.ac.cut.celestia.www",
-  "appName": "Cyclops Viewer",
+  "appId": "cy.ac.cut.celestia.cyclopsviewer",
+  "appName": "CyclopsViewer",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
