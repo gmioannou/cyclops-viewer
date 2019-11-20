@@ -23,7 +23,7 @@
 
     <ion-item *ngFor="let hazardType of hazardTypes">
       <ion-label stacked>{{hazardType.name}}</ion-label>
-      <ion-select formControlName="HazardType">
+      <ion-select formControlName="HazardType" [(ngModel)]="bindingData[hazardType.name]">
         <ion-select-option *ngFor="let field of hazardType.values" [value]="field.code">
           {{field?.description}}
         </ion-select-option>
@@ -37,6 +37,13 @@
         </ion-item>
       </ion-col>
     </ion-row>
+
+
+    <ion-button ion-button color="primary" (click)="test($event)">
+      Test
+    </ion-button>
+
+
 
   </ion-list>
 

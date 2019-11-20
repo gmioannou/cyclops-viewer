@@ -26,10 +26,16 @@ export class EventFormComponent implements OnInit {
   });
 
   hazardTypes = []
+  bindingData = {}
 
   customPopoverOptions: any = {
     header: 'Select Hazard Event Type'
   };
+
+  test() {
+    console.log("test", this.bindingData)
+  }
+
 
   postEvent(event) {
     console.log(event);

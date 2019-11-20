@@ -265,7 +265,7 @@ export class MapViewerPage implements OnInit {
                 });
               }
             }
-            // there are empty rows, we need only those with values
+            // there are e
             if(filedObj.name && filedObj.name != "" && filedObj.values.length > 0)  this.hazardTypes.push(filedObj)
             
           });
