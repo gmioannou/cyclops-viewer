@@ -27,7 +27,7 @@
 
   <ion-bottom-drawer id="bottom-sheet" [(state)]=drawerState [(dockedHeight)]=dockedHeight>
     <div class="drawer-content">
-      <app-event-form></app-event-form>
+      <app-event-form [data]="hazardTypes"></app-event-form>
     </div>
   </ion-bottom-drawer>
 

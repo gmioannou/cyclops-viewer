@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 
 @Component({
@@ -9,8 +9,12 @@ import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@ang
 export class EventFormComponent implements OnInit {
   
   constructor(private _formBuilder: FormBuilder) { }
+  @Input() data;
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log("inside event form", this.data)
+    this.hazardTypes = this.data
+  }
 
   eventForm: FormGroup = this._formBuilder.group({
     HazardType: new FormControl("",Validators.required),
@@ -21,20 +25,7 @@ export class EventFormComponent implements OnInit {
     attachments: new FormArray([]),
   });
 
-  hazardTypes = [
-    {
-      'code':'1',
-      'description': 'One'
-    },
-    {
-      'code':'2',
-      'description': 'Two'
-    },
-    {
-      'code':'3',
-      'description': 'Three'
-    },
-  ]
+  hazardTypes = []
 
   customPopoverOptions: any = {
     header: 'Select Hazard Event Type'

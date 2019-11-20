@@ -21,6 +21,7 @@ export class MapViewerPage implements OnInit {
   dockedHeight = 400;
   items: File[] = [];
   mapPoint: any;
+  hazardTypes: any = [];
 
   constructor(public platform: Platform) { }
 
@@ -237,22 +238,36 @@ export class MapViewerPage implements OnInit {
       locateWidget.locate()
     });
 
+
     // print out the coded domain values when the layer is loaded
-    this.mapView.whenLayerView(hazardsLayer).then(function(layerView) {
-      layerView.watch("updating", function(value) {
+    this.mapView.whenLayerView(hazardsLayer).then((layerView) =>{
+
+      layerView.watch("updating", (value)=> {
         if (!value) {
-          hazardsLayer.fields.forEach(function(field){
+          
+          hazardsLayer.fields.forEach((field) =>{
+            
+            let filedObj = { name : "", values: []}
             if (field.domain){
               var domain = field.domain
               console.log('\n\n', field.domain)
               console.log('\n', field.name, domain.type, domain.name);
-
+              filedObj.name = field.name
               if (domain.type === "coded-value"){
-                domain.codedValues.forEach(function(codeValue){
+                domain.codedValues.forEach((codeValue) =>{
                   console.log("name:", codeValue.name, "code:", codeValue.code);
+                  filedObj.values.push(
+                    {
+                      code: codeValue.code,
+                      description: codeValue.name
+                    }
+                  )
                 });
               }
             }
+            // there are empty rows, we need only those with values
+            if(filedObj.name && filedObj.name != "" && filedObj.values.length > 0)  this.hazardTypes.push(filedObj)
+            
           });
         }
       });

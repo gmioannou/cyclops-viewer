@@ -12,11 +12,20 @@
 
 <form [formGroup]="eventForm">
   <ion-list>
-    <ion-item>
+    <!-- <ion-item  >
       <ion-label stacked>Hazard Event Type:</ion-label>
       <ion-select value="One" formControlName="HazardType" [interfaceOptions]="customPopoverOptions" interface="popover">
         <ion-select-option *ngFor="let hazardType of hazardTypes" [value]="hazardType.description">
           {{hazardType?.description}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item> -->
+
+    <ion-item *ngFor="let hazardType of hazardTypes">
+      <ion-label stacked>{{hazardType.name}}</ion-label>
+      <ion-select formControlName="HazardType">
+        <ion-select-option *ngFor="let field of hazardType.values" [value]="field.code">
+          {{field?.description}}
         </ion-select-option>
       </ion-select>
     </ion-item>
