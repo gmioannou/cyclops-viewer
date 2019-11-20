@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { Platform } from '@ionic/angular';
 import { loadModules } from 'esri-loader';
 import { IonBottomDrawerModule, DrawerState } from 'ion-bottom-drawer';
-
+import { EventFormComponent } from '../event-form/event-form.component';
 import formurlencoded from 'form-urlencoded';
 import axios from 'axios'
 
@@ -12,20 +12,28 @@ import axios from 'axios'
   templateUrl: './map-viewer.page.html',
   styleUrls: ['./map-viewer.page.scss'],
 })
+
 export class MapViewerPage implements OnInit {
   @ViewChild("map", { static: false }) mapEl: ElementRef;
 
-  mapView: any = null
+  mapView: any
   drawerState = 0;
-  dockedHeight = 300;
+  dockedHeight = 400;
   items: File[] = [];
   mapPoint: any;
 
-  constructor(public platform: Platform, public modalController: ModalController) { }
+  constructor(public platform: Platform) { }
 
   ngOnInit() {
     this.getMap();
-    this.listenerInputChange();
+    // this.listenerInputChange();
+  }
+
+  showEventForm(event){
+    if (this.drawerState == DrawerState.Bottom) 
+      this.drawerState = DrawerState.Docked;
+    else
+      this.drawerState = DrawerState.Bottom
   }
 
   addToMap(event) {
@@ -180,11 +188,9 @@ export class MapViewerPage implements OnInit {
       map: map
     });
 
-
-
-    // editor widget
+    //editor widget
     // var editorWidget = new Editor({
-    //   view: mapView,
+    //   view: this.mapView,
     //   layerInfos: [{
     //     layer: hazardsLayer,
     //     fieldConfig: [
@@ -212,7 +218,7 @@ export class MapViewerPage implements OnInit {
     //   }]
     // });
 
-    // mapView.ui.add(editorWidget, "top-right");
+    // this.mapView.ui.add(editorWidget, "top-right");
 
     // location widget
     var locateWidget = new Locate({
@@ -231,21 +237,43 @@ export class MapViewerPage implements OnInit {
       locateWidget.locate()
     });
 
+    // print out the coded domain values when the layer is loaded
+    this.mapView.whenLayerView(hazardsLayer).then(function(layerView) {
+      layerView.watch("updating", function(value) {
+        if (!value) {
+          hazardsLayer.fields.forEach(function(field){
+            if (field.domain){
+              var domain = field.domain
+              console.log('\n\n', field.domain)
+              console.log('\n', field.name, domain.type, domain.name);
+
+              if (domain.type === "coded-value"){
+                domain.codedValues.forEach(function(codeValue){
+                  console.log("name:", codeValue.name, "code:", codeValue.code);
+                });
+              }
+            }
+          });
+        }
+      });
+    });
+
+
     // location tracker
     var track = new Track({
       view: this.mapView,
-      useHeadingEnabled: true  // Change orientation of the map
-      // graphic: new Graphic({
-      //   symbol: {
-      //     type: "simple-marker",
-      //     size: "12px",
-      //     color: "green",
-      //     outline: {
-      //       color: "#efefef",
-      //       width: "1.5px"
-      //     }
-      //   }
-      // }),
+      useHeadingEnabled: true,  // Change orientation of the map
+      graphic: new Graphic({
+        symbol: {
+          type: "simple-marker",
+          size: "16px",
+          color: "red",
+          outline: {
+            color: "#efefef",
+            width: "1.5px"
+          }
+        }
+      }),
     });
 
     this.mapView.ui.add(track, "top-left");
@@ -264,20 +292,7 @@ export class MapViewerPage implements OnInit {
       nextBasemap: "satellite"
     });
 
-    this.mapView.ui.add(basemapToggle, "top-right");
-
-    // // basemap gallery
-    // var basemapGallery = new BasemapGallery({
-    //   view: mapView,
-    //   source: {
-    //     portal: {
-    //       url: "https://www.arcgis.com",
-    //       useVectorBasemaps: true  // Load vector tile basemaps
-    //     }
-    //   }
-    // });
-
-    // mapView.ui.add(basemapGallery, "bottom-left");
+    this.mapView.ui.add(basemapToggle, "bottom-left");
 
   }
 

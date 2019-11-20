@@ -1,31 +1,37 @@
 <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button color="primary">
-        <ion-icon slot="icon-only" name="contact"></ion-icon>
-      </ion-button>
-      <ion-button color="primary">
-        <ion-icon slot="icon-only" name="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-buttons slot="primary">
-      <ion-button color="primary">
-        <ion-icon slot="icon-only" name="more"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Hazard Viewer</ion-title>
-  </ion-toolbar>
+  <ion-title>Hazard Viewer</ion-title>
+  <ion-buttons slot="secondary">
+    <ion-button color="primary">
+      <ion-icon slot="icon-only" name="contact"></ion-icon>
+    </ion-button>
+    <ion-button color="primary">
+      <ion-icon slot="icon-only" name="search"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+  <ion-buttons slot="primary">
+    <ion-button color="primary">
+      <ion-icon slot="icon-only" name="more"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
 
 <ion-content>
 
-  <div id="map" #map></div>
+  <div id="map" #map>
+    <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+      <ion-fab-button (click)="showEventForm($event)">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </div>
 
-  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-    <ion-fab-button (click)="addToMap($event)">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <ion-bottom-drawer id="bottom-sheet" [(state)]=drawerState [(dockedHeight)]=dockedHeight>
+    <div class="drawer-content">
+      <app-event-form></app-event-form>
+    </div>
+  </ion-bottom-drawer>
 
-  <ion-bottom-drawer [(state)]=drawerState [(dockedHeight)]=dockedHeight>
+  <!-- <ion-bottom-drawer [(state)]=drawerState [(dockedHeight)]=dockedHeight>
     <div class="drawer-content">
       <ion-list lines="full" class="ion-no-margin ion-no-padding">
         <ion-item>
@@ -44,6 +50,6 @@
         </ion-button>
       </div>
     </div>
-  </ion-bottom-drawer>
+  </ion-bottom-drawer> -->
 
 </ion-content>
