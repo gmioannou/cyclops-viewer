@@ -7,6 +7,10 @@ import formurlencoded from 'form-urlencoded';
 import axios from 'axios'
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
 
+import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+
 @Component({
   selector: 'app-map-viewer',
   templateUrl: './map-viewer.page.html',
@@ -16,20 +20,26 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
 export class MapViewerPage implements OnInit {
   @ViewChild("map", { static: false }) mapEl: ElementRef;
 
-  mapView: any
+  mapView: any;
+  hazardsLayer: any;
+  
   drawerState = 0;
   dockedHeight = 400;
-  items: File[] = [];
+  
   mapPoint: any;
   hazardTypes: any = [];
-  bindingData = {}
-  hazardsLayer
+  bindingData = {};
+  
+  items: File[] = [];
+  photo: SafeResourceUrl;
+  
+  photoList: SafeResourceUrl[] = []
 
-  constructor(public platform: Platform, private _formBuilder: FormBuilder) { }
+  constructor(public platform: Platform, private _formBuilder: FormBuilder, private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.getMap();
-    this.listenerInputChange();
+    // this.listenerInputChange();
   }
 
   eventForm: FormGroup = this._formBuilder.group({
@@ -38,15 +48,27 @@ export class MapViewerPage implements OnInit {
     status: new FormControl(""),
     priority: new FormControl(""),
     specialinstructions: new FormControl(""),
-    attachments: new FormArray([]),
   });
 
 
   showEventForm(event) {
+    this.getLocationPoint(event)
     this.drawerState = DrawerState.Docked
   }
 
-  private captureEvent(event) {
+  private captureEvent() {
+    if (this.mapPoint) {
+
+      this.addFeature()
+      this.drawerState = DrawerState.Bottom
+    }
+    else {
+      console.log("tap map to get")
+    }
+
+  }
+
+  private getLocationPoint(event) {
 
     console.log("get location")
     document.getElementById("map").style.cursor = "crosshair"
@@ -61,26 +83,22 @@ export class MapViewerPage implements OnInit {
 
       this.mapPoint = event.mapPoint
 
-      this.addFeature()
-
-      // hide bottom drawer
-      this.drawerState = DrawerState.Bottom
     });
 
   }
 
-  private listenerInputChange() {
-    const wireUpFileChooser = () => {
-      const elementRef = document.getElementById("filechooser")
-      elementRef.addEventListener('change', (evt: any) => {
-        const files = evt.target.files as File[];
-        for (let i = 0; i < files.length; i++) {
-          this.items.push(files[i]);
-        }
-      }, false);
-    };
-    wireUpFileChooser();
-  }
+  // private listenerInputChange() {
+  //   const wireUpFileChooser = () => {
+  //     const elementRef = document.getElementById("filechooser")
+  //     elementRef.addEventListener('change', (evt: any) => {
+  //       const files = evt.target.files as File[];
+  //       for (let i = 0; i < files.length; i++) {
+  //         this.items.push(files[i]);
+  //       }
+  //     }, false);
+  //   };
+  //   wireUpFileChooser();
+  // }
 
   async addFeature() {
 
@@ -133,6 +151,23 @@ export class MapViewerPage implements OnInit {
     }
   }
 
+  removePhoto(idx) {
+
+    delete this.photoList[idx];
+  }
+
+  async takePhoto() {
+    const image = await Plugins.Camera.getPhoto({
+      quality: 100,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera
+    });
+
+    this.photoList.push(this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl)));
+
+  }
+  
   async getMap() {
 
     await this.platform.ready();
@@ -206,7 +241,7 @@ export class MapViewerPage implements OnInit {
       view: this.mapView,
       useHeadingEnabled: true,
       goToOverride: function (view, options) {
-        options.target.scale = 1500;  // Override the default map scale
+        options.target.scale = 5000;  // Override the default map scale
         return view.goTo(options.target);
       }
     });

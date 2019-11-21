@@ -9,3 +9,27 @@ html, body, #map {
   position: fixed;
   height: 92vh;
 }
+
+#myFileInput {
+  position: absolute;
+  opacity: 0;
+}
+
+.picture {
+  position: relative;
+  width: 100px;
+}
+
+.picture + ion-icon {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  background: rgba(0,0,0,0.20);
+  color: white;
+  padding: 7px;
+}
+
+.picture ion-label, .picture .item-inner {
+  margin:0 !important;
+  padding:0 !important;
+}
