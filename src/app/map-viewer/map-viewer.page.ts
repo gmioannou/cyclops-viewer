@@ -11,6 +11,7 @@ import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
+
 @Component({
   selector: 'app-map-viewer',
   templateUrl: './map-viewer.page.html',
@@ -33,7 +34,7 @@ export class MapViewerPage implements OnInit {
   items: File[] = [];
   photo: SafeResourceUrl;
   
-  photoList: SafeResourceUrl[] = []
+  photoList: any[] = []
 
   constructor(public platform: Platform, private _formBuilder: FormBuilder, private sanitizer: DomSanitizer) { }
 
@@ -144,6 +145,32 @@ export class MapViewerPage implements OnInit {
 
       }
 
+
+      if (this.photoList.length > 0) {
+        // there is a file to upload
+        // make the request to 
+        this.photoList.map(async(o) => {
+         
+          let img = this.dataURItoBlob(o.dataUrl)
+          
+          // let img = this.dataURLtoBlob(o.dataUrl)
+          const formData = new FormData();
+          formData.append("f", "json")
+          formData.append("attachment", new File([img], Date.now().toString() + ".png" , {type: "image/png", lastModified: Date.now()}))
+          const attachmentRes = await axios.post("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Prominent_Peaks_attach/FeatureServer/0/783/addAttachment", formData, {
+            headers: {
+              'content-type': 'multipart/form-data'
+            }
+          })
+  
+          console.log(attachmentRes.data)
+
+        })
+        
+
+      }
+
+
       this.hazardsLayer.refresh()
 
     } catch (e) {
@@ -156,16 +183,36 @@ export class MapViewerPage implements OnInit {
     delete this.photoList[idx];
   }
 
+
+ dataURItoBlob(dataURI) {
+  var byteStr;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+      byteStr = atob(dataURI.split(',')[1]);
+  else
+      byteStr = unescape(dataURI.split(',')[1]);
+
+  var mimeStr = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  var arr= new Uint8Array(byteStr.length);
+  for (var i = 0; i < byteStr.length; i++) {
+      arr[i] = byteStr.charCodeAt(i);
+  }
+
+  return new Blob([arr], {type:mimeStr});
+}
+
+
   async takePhoto() {
     const image = await Plugins.Camera.getPhoto({
-      quality: 100,
+      quality: 10,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Camera
     });
 
-    this.photoList.push(this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl)));
+    this.photoList.push(image);
 
+    console.log("photo list", this.photoList)
   }
   
   async getMap() {
