@@ -6,7 +6,6 @@ import { IonicModule } from '@ionic/angular';
 import { MapViewerPageRoutingModule } from './map-viewer-routing.module';
 import { MapViewerPage } from './map-viewer.page';
 import { IonBottomDrawerModule } from 'ion-bottom-drawer';
-import { EventFormComponent } from '../event-form/event-form.component';
 
 @NgModule({
   imports: [
@@ -18,9 +17,7 @@ import { EventFormComponent } from '../event-form/event-form.component';
     FormsModule,
     ReactiveFormsModule
   ],
-  declarations: [MapViewerPage, EventFormComponent],
-  entryComponents: [
-    EventFormComponent
-  ]
+  declarations: [MapViewerPage],
+  entryComponents: []
 })
 export class MapViewerPageModule { }

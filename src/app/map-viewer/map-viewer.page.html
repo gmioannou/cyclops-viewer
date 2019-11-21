@@ -27,29 +27,43 @@
 
   <ion-bottom-drawer id="bottom-sheet" [(state)]=drawerState [(dockedHeight)]=dockedHeight>
     <div class="drawer-content">
-      <app-event-form [data]="hazardTypes"></app-event-form>
+      <ion-toolbar>
+        <ion-title>Capture Event</ion-title>
+        <ion-buttons slot="primary">
+          <ion-button ion-button color="primary" [disabled]="!eventForm.valid" (click)="captureEvent($event)">
+            <ion-icon slot="icon-only" name="locate"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
     </div>
-  </ion-bottom-drawer>
 
-  <!-- <ion-bottom-drawer [(state)]=drawerState [(dockedHeight)]=dockedHeight>
-    <div class="drawer-content">
-      <ion-list lines="full" class="ion-no-margin ion-no-padding">
-        <ion-item>
-          <ion-label position="stacked"> Description <ion-text color="danger">*</ion-text>
-          </ion-label>
-          <ion-input required type="text"></ion-input>
+    <form [formGroup]="eventForm">
+      <ion-list>
+        <ion-item *ngFor="let hazardType of hazardTypes">
+          <ion-label stacked>{{hazardType.name}}</ion-label>
+          <ion-select formControlName="HazardType" [(ngModel)]="bindingData[hazardType.name]">
+            <ion-select-option *ngFor="let field of hazardType.values" [value]="field.code">
+              {{field?.description}}
+            </ion-select-option>
+          </ion-select>
         </ion-item>
+        
+        <ion-row>
+          <ion-item>
+            <ion-input placeholder="Description..." type="text" formControlName="Description" autocorrect></ion-input>
+          </ion-item>
+        </ion-row>
+
         <ion-item>
           <ion-label position="stacked">Photo</ion-label>
           <input type="file" id="filechooser" />
         </ion-item>
 
       </ion-list>
-      <div class="ion-padding">
-        <ion-button (click)="addFeature()" expand="block" type="submit" class="ion-no-margin" color="primary">Add
-        </ion-button>
-      </div>
-    </div>
-  </ion-bottom-drawer> -->
+    </form>
+
+
+
+  </ion-bottom-drawer>
 
 </ion-content>
