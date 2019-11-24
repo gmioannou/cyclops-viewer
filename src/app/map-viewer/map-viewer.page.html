@@ -19,17 +19,21 @@
 
   <div id="map" #map>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-      <ion-fab-button (click)="showEventForm($event)">
+      <ion-fab-button (click)="toggleDrawerState()">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
   </div>
 
   <ion-bottom-drawer id="bottom-sheet" [(state)]=drawerState [(dockedHeight)]=dockedHeight>
+
     <div class="drawer-content">
       <ion-toolbar>
         <ion-title>Capture Event</ion-title>
         <ion-buttons slot="primary">
+          <ion-button ion-button color="primary" (click)="takePhoto($event)">
+              <ion-icon name="camera"></ion-icon>
+          </ion-button>
           <ion-button ion-button color="primary" [disabled]="!eventForm.valid" (click)="captureEvent($event)">
             <ion-icon slot="icon-only" name="send"></ion-icon>
           </ion-button>
@@ -39,44 +43,35 @@
 
     <form [formGroup]="eventForm">
       <ion-list>
-        <ion-item *ngFor="let hazardType of hazardTypes">
-          <ion-label stacked>{{hazardType.name}}</ion-label>
-          <ion-select formControlName="HazardType" [(ngModel)]="bindingData[hazardType.name]">
-            <ion-select-option *ngFor="let field of hazardType.values" [value]="field.code">
-              {{field?.description}}
+
+        <ion-item>
+          <ion-label stacked>Event Type:</ion-label>
+          <ion-select formControlName="hazard_type">
+            <ion-select-option *ngFor="let featureType of featureLayerDomain" [value]="featureType.value">
+              {{featureType?.label}}
             </ion-select-option>
           </ion-select>
         </ion-item>
 
-        <ion-row>
           <ion-item>
-            <ion-input placeholder="Description..." type="text" formControlName="Description" autocorrect></ion-input>
+            <ion-input formControlName="description" placeholder="Description ..." type="text" autocorrect></ion-input>
           </ion-item>
-        </ion-row>
 
-        <!-- <ion-item>
-          <ion-label position="stacked">Photo</ion-label>
-          <input type="file" id="filechooser" />
-        </ion-item> -->
+          <ion-col col-6 *ngFor="let photo of photoListPreview; let idx = index">
+            <ion-item class="photo">
+              <img [src]="photo">
+            </ion-item>
+            <!-- <ion-icon name="trash" (click)="removePhoto(idx)"></ion-icon> -->
+          </ion-col>
+
+        <!-- <ion-fab vertical="bottom" horizontal="center">
+          <ion-fab-button (click)="takePhoto()">
+            <ion-icon name="camera"></ion-icon>
+          </ion-fab-button>
+        </ion-fab> -->
 
       </ion-list>
-
     </form>
-
-    <ion-row>
-      <ion-col col-6 *ngFor="let photo of photoList; let idx = index">
-        <ion-item class="photo">
-          <img [src]="photo">
-        </ion-item>
-        <!-- <ion-icon name="trash" (click)="removePhoto(idx)"></ion-icon> -->
-      </ion-col>
-    </ion-row>
-
-    <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-      <ion-fab-button (click)="takePhoto()">
-        <ion-icon name="camera"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
 
   </ion-bottom-drawer>
 
