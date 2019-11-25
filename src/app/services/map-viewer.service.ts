@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { GeolocationOptions, Geolocation } from '@capacitor/core';
 import axios from 'axios'
 import formurlencoded from 'form-urlencoded';
+
 // const featureLayerUrl = "https://celestia.cut.ac.cy/server/rest/services/Hosted/Session_Hazards/FeatureServer/0"
 const featureLayerUrl_edit = "https://celestia.cut.ac.cy/server/rest/services/NaturalHazards/FeatureServer/0"
 const featureLayerUrl = "https://celestia.cut.ac.cy/server/rest/services/NaturalHazards/MapServer/0"
@@ -47,96 +48,100 @@ export class MapViewerService {
         console.error('ArcGIS: ', err);
       });
 
-    var popTemplate = {
-      title: "{hazard_type}",
-      content: [
-        {
-          type: "fields",
-          fieldInfos: [
-            {
-              fieldName: "hazard_type",
-              label: "Hazard Type"
-            },
-            {
-              fieldName: "description",
-              label: "Description"
-            },
-            {
-              fieldName: "status",
-              label: "Status"
-            },
-            {
-              fieldName: "priority",
-              label: "Priority"
-            }
-          ]
+    return new Promise((resolve, reject) => {
+
+      var popTemplate = {
+        title: "{hazard_type}",
+        content: [
+          {
+            type: "fields",
+            fieldInfos: [
+              {
+                fieldName: "hazard_type",
+                label: "Hazard Type"
+              },
+              {
+                fieldName: "description",
+                label: "Description"
+              },
+              {
+                fieldName: "status",
+                label: "Status"
+              },
+              {
+                fieldName: "priority",
+                label: "Priority"
+              }
+            ]
+          }
+        ]
+      };
+
+      let featureLayer = new FeatureLayer({
+        url: featureLayerUrl,
+        popupTemplate: popTemplate
+      });
+
+      this.featureLayer = featureLayer
+
+      let map = new Map({
+        basemap: 'osm',
+        layers: [featureLayer]
+      });
+
+      let mapView = new MapView({
+        center: [33.22861, 35.07287],
+        zoom: 8,
+        map: map
+      });
+
+      /*
+       Add widgets to the mapview
+        locateWidget
+        trackWidget
+        compassWidget
+        basemapToggleWidget
+        */
+
+      var locateWidget = new Locate({
+        view: mapView,
+        useHeadingEnabled: true,
+        goToOverride: function (view, options) {
+          options.target.scale = 1500;  // Override the default map scale
+          return view.goTo(options.target);
         }
-      ]
-    };
+      });
+      mapView.ui.add(locateWidget, "top-left");
 
-    let featureLayer = new FeatureLayer({
-      url: featureLayerUrl,
-      popupTemplate: popTemplate
-    });
+      var trackWidget = new Track({
+        view: mapView,
+        useHeadingEnabled: false,  // Change orientation of the map
+        goToOverride: function (view, options) {
+          options.target.scale = 1500;  // Override the default map scale
+          return view.goTo(options.target);
+        }
+      });
+      mapView.ui.add(trackWidget, "top-left");
 
-    this.featureLayer = featureLayer
+      var compassWidget = new Compass({
+        view: mapView
+      });
+      mapView.ui.add(compassWidget, "top-left");
 
-    let map = new Map({
-      basemap: 'osm',
-      layers: [featureLayer]
-    });
+      var basemapToggleWidget = new BasemapToggle({
+        view: mapView,
+        nextBasemap: "satellite"
+      });
+      mapView.ui.add(basemapToggleWidget, "bottom-left");
 
-    let mapView = new MapView({
-      center: [33.22861, 35.07287],
-      zoom: 8,
-      map: map
-    });
+      // zoom to current location
+      mapView.when(function () {
+        locateWidget.locate();
+      });
 
-    /*
-     Add widgets to the mapview
-      locateWidget
-      trackWidget
-      compassWidget
-      basemapToggleWidget
-      */
+      resolve(mapView)
+    })
 
-    var locateWidget = new Locate({
-      view: mapView,
-      useHeadingEnabled: true,
-      goToOverride: function (view, options) {
-        options.target.scale = 1500;  // Override the default map scale
-        return view.goTo(options.target);
-      }
-    });
-    mapView.ui.add(locateWidget, "top-left");
-
-    var trackWidget = new Track({
-      view: mapView,
-      useHeadingEnabled: false,  // Change orientation of the map
-      goToOverride: function (view, options) {
-        options.target.scale = 1500;  // Override the default map scale
-        return view.goTo(options.target);
-      }
-    });
-    mapView.ui.add(trackWidget, "top-left");
-
-    var compassWidget = new Compass({
-      view: mapView
-    });
-    mapView.ui.add(compassWidget, "top-left");
-
-    var basemapToggleWidget = new BasemapToggle({
-      view: mapView,
-      nextBasemap: "satellite"
-    });
-    mapView.ui.add(basemapToggleWidget, "bottom-left");
-
-    // zoom to current location
-    mapView.when(function () {
-      locateWidget.locate();
-    });
-
-    return mapView
   }
 
 
@@ -187,20 +192,30 @@ export class MapViewerService {
               'content-type': 'multipart/form-data'
             }
           })
-
-          this.featureLayer.refresh()
         })
       }
 
+      // refresh feature layer
+      this.featureLayer.refresh()
+      return objectID
+      
     } catch (e) {
       console.log(e)
     }
   }
 
+  delay(num)  {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve("success")
+      }, num)
+    })
+  }
+
   // convert the dataURI image format to binary
   dataURItoBlob(dataURI) {
     var byteStr;
-    
+
     if (dataURI.split(',')[0].indexOf('base64') >= 0)
       byteStr = atob(dataURI.split(',')[1]);
     else

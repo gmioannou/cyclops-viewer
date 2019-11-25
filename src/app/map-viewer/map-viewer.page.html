@@ -17,6 +17,10 @@
 
 <ion-content>
 
+  <ion-fab class="spin" *ngIf="loading" vertical="center" horizontal="center">
+    <ion-spinner color="primary"></ion-spinner>
+  </ion-fab>
+
   <div id="map" #map>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button (click)="toggleDrawerState()">
@@ -32,7 +36,7 @@
         <ion-title>Capture Event</ion-title>
         <ion-buttons slot="primary">
           <ion-button ion-button color="primary" (click)="takePhoto($event)">
-              <ion-icon name="camera"></ion-icon>
+            <ion-icon slot="icon-only" name="camera"></ion-icon>
           </ion-button>
           <ion-button ion-button color="primary" [disabled]="!eventForm.valid" (click)="captureEvent($event)">
             <ion-icon slot="icon-only" name="send"></ion-icon>
@@ -53,16 +57,14 @@
           </ion-select>
         </ion-item>
 
-          <ion-item>
-            <ion-input formControlName="description" placeholder="Description ..." type="text" autocorrect></ion-input>
-          </ion-item>
+        <ion-item>
+          <ion-textarea formControlName="description" placeholder="Description ..." autocorrect></ion-textarea>
+        </ion-item>
 
-          <ion-col col-6 *ngFor="let photo of photoListPreview; let idx = index">
-            <ion-item class="photo">
-              <img [src]="photo">
-            </ion-item>
-            <!-- <ion-icon name="trash" (click)="removePhoto(idx)"></ion-icon> -->
-          </ion-col>
+        <div class="photo-thumbnail" *ngFor="let photo of photoListPreview; let idx = index">
+          <img [src]="photo">
+          <ion-icon color="danger" name="trash" (click)="removePhoto(idx)"></ion-icon>
+        </div>
 
         <!-- <ion-fab vertical="bottom" horizontal="center">
           <ion-fab-button (click)="takePhoto()">

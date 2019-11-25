@@ -4,6 +4,7 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
 import { Plugins, CameraResultType, CameraSource, Geolocation, GeolocationOptions } from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MapViewerService } from '../services/map-viewer.service';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-map-viewer',
@@ -23,32 +24,48 @@ export class MapViewerPage implements OnInit {
   featureLayerField: any
   featureLayerDomain: any
 
+  loading: boolean = false
+  subscribe: any;
+
   constructor(
-    private formBuilder: FormBuilder,
-    private sanitizer: DomSanitizer,
-    private mapViewerService: MapViewerService) { }
+    private formBuilder: FormBuilder, 
+    private sanitizer: DomSanitizer, 
+    private mapViewerService: MapViewerService, 
+    private platform: Platform) 
+  {
+    this.subscribe = this.platform.backButton.subscribeWithPriority(66666, () => {
+      if (this.constructor.name == "MapViewerPage") {
+        if (window.confirm("Are you sure you want to quit Cyclops Collector?")){
+          navigator["app"].exitApp();
+        }
+      }  
+    })
+  }
 
-  ngOnInit() {
+  async ngOnInit() {
+
     // get mapview
-    this.mapViewerService.getMapView()
-      .then(res => {
-        this.mapView = res
-        this.mapView.container = this.mapEl.nativeElement
+    try {
+      this.loading = true
 
-        console.log('Mapview initialized...');
-      })
-      .catch(err => console.error(err))
+      let res = await this.mapViewerService.getMapView()
+      this.mapView = res
+      this.mapView.container = this.mapEl.nativeElement
+      console.log('Mapview initialized...');
 
-    // get featurelayer descriptor
-    this.mapViewerService.getFetureLayerDescriptor()
-      .then(laydesc => {
-        let renderer = laydesc.data.drawingInfo.renderer
-        this.featureLayerField = renderer.field1
-        this.featureLayerDomain = renderer.uniqueValueInfos
+      let laydesc = await this.mapViewerService.getFetureLayerDescriptor()
+      let renderer = laydesc.data.drawingInfo.renderer
+      this.featureLayerField = renderer.field1
+      this.featureLayerDomain = renderer.uniqueValueInfos
+      console.log('Layer descriptor initialized...');
 
-        console.log('Layer descriptor loaded...')
-      })
-      .catch(err => console.error(err))
+    }
+    catch (e) {
+      console.log(e)
+    }
+    finally {
+      this.loading = false
+    }
   }
 
   // form for capturing new events
@@ -58,18 +75,28 @@ export class MapViewerPage implements OnInit {
   });
 
   // capture new event
-  captureEvent() {
+  async captureEvent() {
     const eventFormData = this.eventForm.value;
-    this.mapViewerService.captureEvent(eventFormData, this.photoList)
-      .then(res => console.log(res))
-      .catch(err => console.error(err))
+    try {
+      this.loading = true
 
-    // reset event form and list of photos
-    this.eventForm.reset()
-    this.photoList = []
-    this.photoListPreview = []
+      await this.mapViewerService.captureEvent(eventFormData, this.photoList)
+      
+      // reset event form and list of photos
+      this.eventForm.reset()
+      this.photoList = []
+      this.photoListPreview = []
 
-    this.toggleDrawerState()
+      this.toggleDrawerState()
+
+    }
+    catch (e) {
+      console.log(e)
+    }
+    finally {
+      this.loading = false
+    }
+
   }
 
   // take photo for attachement
@@ -86,8 +113,8 @@ export class MapViewerPage implements OnInit {
   }
 
   removePhoto(idx) {
-    delete this.photoList[idx];
-    delete this.photoListPreview[idx];
+    this.photoList.splice(idx, 1);
+    this.photoListPreview.splice(idx, 1);
   }
 
   // show/hide drawer (bottom sheet)

@@ -10,26 +10,17 @@ html, body, #map {
   height: 92vh;
 }
 
-#myFileInput {
-  position: absolute;
-  opacity: 0;
-}
-
-.picture {
+.photo-thumbnail {
   position: relative;
-  width: 100px;
+  display: inline-block;
 }
-
-.picture + ion-icon {
+.photo-thumbnail img {
+  padding: 10px;
+  width: 180px;
+}
+.photo-thumbnail ion-icon {
   position: absolute;
-  top: 5px;
-  right: 7px;
-  background: rgba(0,0,0,0.20);
-  color: white;
-  padding: 7px;
-}
-
-.picture ion-label, .picture .item-inner {
-  margin:0 !important;
-  padding:0 !important;
+  top: calc(20% - 10px);
+  left: calc(80% - 10px);
+  font-size: 30px;
 }
