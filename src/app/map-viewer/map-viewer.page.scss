@@ -24,3 +24,17 @@ html, body, #map {
   left: calc(80% - 10px);
   font-size: 30px;
 }
+
+.featureType-thumbnail {
+  position: relative;
+  display: inline-block;
+} 
+
+.featureType-thumbnail.selected {
+  background-color: lightgray;
+} 
+
+.featureType-thumbnail img {
+  padding: 10px;
+  height: 60px;
+}

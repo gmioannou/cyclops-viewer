@@ -48,15 +48,21 @@
     <form [formGroup]="eventForm">
       <ion-list>
 
-        <ion-item>
+        <!-- <ion-item>
           <ion-label stacked>Event Type:</ion-label>
           <ion-select formControlName="hazard_type">
             <ion-select-option *ngFor="let featureType of featureLayerDomain" [value]="featureType.value">
               {{featureType?.label}}
             </ion-select-option>
           </ion-select>
-        </ion-item>
+        </ion-item> -->
 
+        <div [ngClass]="{'featureType-thumbnail': true, 'selected': featureType.isSelected}" *ngFor="let featureType of featureLayerDomain">
+          <img (click)="selectFeatureType(featureType)" [src]="'data:image/png;base64,' + featureType.symbol.imageData" />
+        </div>
+        <ion-item>
+            <h4>{{featureTypeSelected?.label}}</h4>
+        </ion-item>
         <ion-item>
           <ion-textarea formControlName="description" placeholder="Description ..." autocorrect></ion-textarea>
         </ion-item>

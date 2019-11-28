@@ -23,6 +23,7 @@ export class MapViewerPage implements OnInit {
   mapView: any;
   featureLayerField: any
   featureLayerDomain: any
+  featureTypeSelected: any
 
   loading: boolean = false
   subscribe: any;
@@ -57,6 +58,11 @@ export class MapViewerPage implements OnInit {
       let renderer = laydesc.data.drawingInfo.renderer
       this.featureLayerField = renderer.field1
       this.featureLayerDomain = renderer.uniqueValueInfos
+      this.featureLayerDomain.forEach(element => {
+        element.isSelected = false
+      });
+      
+      console.log(this.featureLayerDomain)
       console.log('Layer descriptor initialized...');
 
     }
@@ -70,13 +76,28 @@ export class MapViewerPage implements OnInit {
 
   // form for capturing new events
   eventForm: FormGroup = this.formBuilder.group({
-    hazard_type: new FormControl("", Validators.required),
+    hazard_type: new FormControl(""),
     description: new FormControl("")
   });
+
+  // update form control based on user selection
+  selectFeatureType(featureType) {
+    this.eventForm.controls['hazard_type'].setValue(featureType.value);
+    this.featureLayerDomain.forEach(element => {
+      if (element == featureType){
+        element.isSelected = true
+        this.featureTypeSelected = element
+      }
+      else element.isSelected = false
+    });
+
+  }
 
   // capture new event
   async captureEvent() {
     const eventFormData = this.eventForm.value;
+    // console.log(eventFormData)
+
     try {
       this.loading = true
 
